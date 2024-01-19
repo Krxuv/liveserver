@@ -1,0 +1,344 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Visual Code Editor</title>
+
+<style>
+@font-face {
+  src: url(Font_iOS.ttf);
+  font-family: 'Ios';
+}
+html
+{
+	padding: 0;
+	margin: 0;
+}
+
+body
+{
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	font-family: 'Ios';
+}
+
+textarea
+{
+	padding: 10px;
+	resize: none;
+	width: calc( 100% - 20px );
+	height: 50vh;
+	margin: 0;
+	border-top: 0;
+	border-right: 0;
+	border-left: 0;
+	border-bottom:2px solid #F7CA18;
+}
+
+textarea:focus
+{
+	outline: none;
+}
+
+iframe
+{
+	margin: 0;
+	border: 0;
+	height: 50vh;
+}
+
+.menu {
+  font-family: Ubuntu, Tahoma, 'Trebuchet MS', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  padding: 10px 12px;
+  margin:5px;
+  text-align: center;
+  text-decoration: none;
+  border: 1px solid #222;
+  display: inline-block;
+  border-radius: 3px;
+  -webkit-transition-duration: 0.1s; /* Safari */
+  transition-duration: 0.1s;
+  cursor: pointer;
+  background-color: #E2DDDD;
+  color: black; word-break: break-all; word-wrap: break-word; 
+  box-shadow: 0px 0px 6px rgba(0,0,0,0.3);
+}
+
+.menu:hover {
+  box-shadow: 0 0 0;
+}
+
+.panel-container-vertical {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-top {
+  flex: 0 0 auto;
+  width: 100%;
+  height: 50vh;
+  white-space: nowrap;
+}
+
+
+.panel-bottom {
+  flex: 0 0 auto;
+  width: 100%;
+  height: 90vh;
+  white-space: nowrap;
+}
+
+.splitter-horizontal {
+  flex: 0 0 auto;
+  height: 20px;
+  background: url(drag.png) center center no-repeat #0066FF;
+  cursor: row-resize;
+}
+
+
+
+
+/* ===== Scrollbar CSS ===== */
+  /* Firefox */
+  * {
+    scrollbar-width: 15px;
+    scrollbar-color: green;
+  }
+
+  /* Chrome, Edge, and Safari */
+  *::-webkit-scrollbar {
+    width: 25px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #b3dddf;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: #e6b328;
+    border-radius: 50px;
+    border: 5px double #000000;
+  }
+
+
+</style>
+
+<script>
+window.console = window.console || function(t) {};
+</script>
+
+<script>
+  if (document.location.search.match(/type=embed/gi)) {
+    window.parent.postMessage("resize", "*");
+  }
+</script>
+
+</head>
+
+<body translate="no" style="">
+  
+<div class="panel-container-vertical">
+
+<div class="panel-top resizable" style="transition: all 0s ease 0s; height: 250px;">
+
+<div align="center" style="white-space: normal; word-wrap: break-word; word-break: break-all; padding: 5px; border-bottom: 1px solid #545454;">
+<button class="menu"><input type=checkbox id=realtime onclick="update()" checked>Live</button>
+<a class="menu" href=# onClick="update()">Update</a>
+<a class="menu" id="copy">Copy</a>  
+<a class="menu" onclick="erasetext();">Clear</a>
+</div>
+
+
+<textarea class="data" id="data" spellcheck="false" ><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Server</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #333;
+            color: #f2f2f2;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Live Server</h1>
+    <p>Edit the code above, and it will automatically preview</p>
+    <button onclick="enableDarkMode()">Enable Dark Mode</button>
+    <button onclick="enableLightMode()">Enable Light Mode</button>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>Server 1</td>
+                <td><button onclick="startServer1()">Start</button></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Server 2</td>
+                <td><button onclick="startServer2()">Start</button></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Server 3</td>
+                <td><button onclick="startServer3()">Start</button></td>
+            </tr>
+        </tbody>
+    </table>
+    <script>
+        function reloadPage() {
+            location.reload();
+        }
+
+        function enableDarkMode() {
+            document.body.style.backgroundColor = "#333";
+            document.body.style.color = "#f2f2f2";
+        }
+
+        function enableLightMode() {
+            document.body.style.backgroundColor = "#f2f2f2";
+            document.body.style.color = "#333";
+        }
+
+        function startServer1() {
+            alert("Server 1 started!");
+        }
+
+        function startServer2() {
+            alert("Server 2 started!");
+        }
+
+        function startServer3() {
+            alert("Server 3 started!");
+        }
+    </script>
+</body>
+</html></textarea>
+
+</div>
+
+
+<div class="splitter-horizontal"></div>
+
+
+<div class="panel-bottom">
+
+<iframe allow="clipboard-read; clipboard-write" name=hello style="width: 100%; height: 100%"></iframe>
+			
+</div>
+</div>
+
+
+<script src="jquery.min.js"></script>
+<script src="jquery-resizable.js"></script>
+
+<script id="rendered-js">
+
+$(".panel-top").resizable({
+  handleSelector: ".splitter-horizontal",
+  resizeWidth: false });
+
+//# sourceURL=pen.js
+
+</script>
+
+<script>
+
+  // Live
+ 
+function realtime()
+{
+	if (!document.querySelector("#realtime").checked) return;
+	update();
+}
+
+dataArea=document.getElementById("data");
+dataArea.onkeyup=realtime;
+
+update();
+
+  // Update
+
+function update()
+{
+	let outty = window.hello.document;
+	outty.open();
+	let inny=document.getElementById("data");
+	outty.write(inny.value);
+	outty.close();
+};
+
+</script>
+
+<script>
+
+  // Copy
+
+const copyButton = document.getElementById("copy");
+const copyText = document.getElementById("data");
+
+copyButton.addEventListener("click", () => {
+  copyText.select();
+  copyText.setSelectionRange(0, 99999);
+  document.execCommand("copy");
+  copyButton.classList.toggle("success");
+  copyButton.innerHTML = "Copied";
+
+  setTimeout(function () {
+    copyButton.classList.toggle("success");
+    copyButton.innerHTML = "Copy!";
+  }, 2000);
+});
+
+</script>
+
+
+
+<script>
+
+  // Clear 
+  
+function erasetext() {
+  document.getElementById("data").value = "";
+  
+}
+</script>
+
+
+</body></html>
